@@ -1,5 +1,5 @@
 //
-//  KSCSSWriter.h
+//  KSStyleSheetWriter.m
 //
 //  Copyright 2010-2012, Mike Abdullah and Karelia Software
 //  All rights reserved.
@@ -25,15 +25,31 @@
 //
 
 
-#import "KSForwardingWriter.h"
+#import "KSStyleSheetWriter.h"
 
 
-@interface KSCSSWriter : KSForwardingWriter
- 
-// Writes the string followed enough newlines to carry on writing
+@implementation KSStyleSheetWriter
+
 - (void)writeCSSString:(NSString *)cssString;
+{
+    [self writeString:cssString];
+    if (![cssString hasSuffix:@"\n"]) [self writeString:@"\n"];
+    [self writeString:@"\n"];
+}
 
 - (void)writeIDSelector:(NSString *)ID;
+{
+    [self writeString:@"#"];
+    [self writeString:ID];
+}
+
 - (void)writeDeclarationBlock:(NSString *)declarations;
+{
+    [self writeString:@" {"];
+    [self writeString:declarations];
+    [self writeString:@"}"];
+    
+    // Could be smarter and analyze declarations for newlines
+}
 
 @end
