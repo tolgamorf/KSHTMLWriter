@@ -28,8 +28,14 @@
 #import "KSForwardingWriter.h"
 
 
+@class KSStyleWriter;
+
+
 @interface KSStyleSheetWriter : KSForwardingWriter
- 
+
+// Vends out a temporary style writer to you for writing declarations. Do NOT attempt to use the style writer beyond the block
+- (void)writeSelector:(NSString *)selector declarationsBlock:(void (^)(KSStyleWriter *styleWriter))declarations;
+
 // Writes the string followed enough newlines to carry on writing
 - (void)writeCSSString:(NSString *)cssString;
 

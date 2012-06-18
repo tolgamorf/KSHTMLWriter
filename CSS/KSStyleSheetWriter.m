@@ -27,8 +27,22 @@
 
 #import "KSStyleSheetWriter.h"
 
+#import "KSStyleWriter.h"
+
 
 @implementation KSStyleSheetWriter
+
+- (void)writeSelector:(NSString *)selector declarationsBlock:(void (^)(KSStyleWriter *))declarations;
+{
+    [self writeString:selector];
+    [self writeString:@" { "];
+    
+    KSStyleWriter *styleWriter = [[KSStyleWriter alloc] initWithOutputWriter:self];
+    declarations(styleWriter);
+    [styleWriter release];
+    
+    [self writeString:@"}\n"];
+}
 
 - (void)writeCSSString:(NSString *)cssString;
 {
