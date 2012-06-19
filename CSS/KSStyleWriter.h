@@ -12,4 +12,8 @@
 
 - (void)writeProperty:(NSString *)property value:(NSString *)value;
 
+// Colors
+- (BOOL)writeProperty:(NSString *)property color:(NSColor *)color;  // returns NO if unsuitable color
++ (NSString *)hexadecimalRepresentationOfColor:(NSColor *)color;    // returns nil if unsuitable color
+
 @end
