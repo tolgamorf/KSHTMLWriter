@@ -18,6 +18,26 @@
     [self writeString:@"; "];
 }
 
+- (BOOL)writeBackgroundWithGradient:(NSGradient *)gradient repeat:(BOOL)repeat;
+{
+    NSColor *endColor;
+    [gradient getColor:&endColor location:NULL atIndex:([gradient numberOfColorStops] - 1)];
+    NSString *endColorName = [[self class] hexadecimalRepresentationOfColor:endColor];
+    if (!endColorName) return NO;
+    
+    NSString *gradientDesc = [[self class] linearGradientWithGradient:gradient];
+    if (!gradientDesc) return NO;
+    
+    NSString *value = [NSString stringWithFormat:@"%@ %@", endColorName, gradientDesc];
+    if (!repeat)
+    {
+        value = [value stringByAppendingString:@" no-repeat"];
+    }
+    
+    [self writeProperty:@"background" value:value];
+    return YES;
+}
+
 - (BOOL)writeProperty:(NSString *)property color:(NSColor *)color;
 {
     NSString *hex = [[self class] hexadecimalRepresentationOfColor:color];

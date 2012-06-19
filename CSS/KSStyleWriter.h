@@ -16,6 +16,8 @@
 #pragma mark Colors & Gradients
 // These methods return nil or NO if a color cannot be expressed in RGB
 
+- (BOOL)writeBackgroundWithGradient:(NSGradient *)gradient repeat:(BOOL)repeat;
+
 - (BOOL)writeProperty:(NSString *)property color:(NSColor *)color;
 + (NSString *)hexadecimalRepresentationOfColor:(NSColor *)color;
 
