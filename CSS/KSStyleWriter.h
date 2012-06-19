@@ -12,8 +12,15 @@
 
 - (void)writeProperty:(NSString *)property value:(NSString *)value;
 
-// Colors
-- (BOOL)writeProperty:(NSString *)property color:(NSColor *)color;  // returns NO if unsuitable color
-+ (NSString *)hexadecimalRepresentationOfColor:(NSColor *)color;    // returns nil if unsuitable color
+
+#pragma mark Colors & Gradients
+// These methods return nil or NO if a color cannot be expressed in RGB
+
+- (BOOL)writeProperty:(NSString *)property color:(NSColor *)color;
++ (NSString *)hexadecimalRepresentationOfColor:(NSColor *)color;
+
+- (BOOL)writeProperty:(NSString *)property gradient:(NSGradient *)gradient;
++ (NSString *)linearGradientWithGradient:(NSGradient *)gradient;
+
 
 @end

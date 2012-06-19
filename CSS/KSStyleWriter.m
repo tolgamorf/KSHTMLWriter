@@ -60,4 +60,33 @@
 	return result;
 }
 
+- (BOOL)writeProperty:(NSString *)property gradient:(NSGradient *)gradient;
+{
+    NSString *value = [[self class] linearGradientWithGradient:gradient];
+    if (!value) return NO;
+    
+    [self writeProperty:property value:value];
+    return YES;
+}
+
++ (NSString *)linearGradientWithGradient:(NSGradient *)gradient;
+{
+    NSColor *color1;
+    [gradient getColor:&color1 location:NULL atIndex:0];
+    NSString *colorName1 = [self hexadecimalRepresentationOfColor:color1];
+    if (!colorName1) return nil;
+    
+    NSColor *color2;
+    [gradient getColor:&color2 location:NULL atIndex:1];
+    NSString *colorName2 = [self hexadecimalRepresentationOfColor:color2];
+    if (!colorName2) return nil;
+    
+    // TODO: Account for more than 2 colors
+    
+    NSString *result = [NSString stringWithFormat:
+                        @"-webkit-linear-gradient(%@, %@)", colorName1, colorName2];
+    
+    return result;
+}
+
 @end
