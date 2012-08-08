@@ -242,7 +242,7 @@
 {
     [self writeString:@"\n"];
     
-    for (int i = 0; i < [self indentationLevel]; i++)
+    for (NSUInteger i = 0; i < [self indentationLevel]; i++)
     {
         [self writeString:@"\t"];
     }
@@ -307,10 +307,15 @@
 
 #pragma mark Elements Stack
 
-- (BOOL)canWriteElementInline:(NSString *)tagName;
+- (BOOL)canWriteElementInline:(NSString *)element;
 {
     // In standard XML, no elements can be inline, unless it's the start of the doc
-    return (_inlineWritingLevel == 0);
+    return (_inlineWritingLevel == 0 || [[self class] shouldPrettyPrintElementInline:element]);
+}
+
++ (BOOL)shouldPrettyPrintElementInline:(NSString *)element;
+{
+    return NO;
 }
 
 - (NSArray *)openElements; { return [[_openElements copy] autorelease]; }
@@ -478,7 +483,7 @@ static NSCharacterSet *sCharactersToEntityEscapeWithoutQuot;
         CFStringRef encodingName = CFStringGetNameOfEncoding(CFStringConvertNSStringEncodingToEncoding(encoding));
         
         [NSException raise:NSInvalidArgumentException
-                    format:@"Unsupported character encoding %@ (%u)", encodingName, encoding];
+                    format:@"Unsupported character encoding %@ (%lu)", encodingName, (unsigned long) encoding];
     }
 	
     
@@ -643,7 +648,7 @@ static NSCharacterSet *sCharactersToEntityEscapeWithoutQuot;
 
 - (void)writeAttributes:(KSXMLWriter *)writer;
 {
-    for (int i = 0; i < [_attributes count]; i+=2)
+    for (NSUInteger i = 0; i < [_attributes count]; i+=2)
     {
         NSString *attribute = [_attributes objectAtIndex:i];
         NSString *value = [_attributes objectAtIndex:i+1];
