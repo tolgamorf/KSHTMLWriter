@@ -18,6 +18,21 @@
     [self writeString:@"; "];
 }
 
+- (BOOL)writeBackgroundWithImageURL:(NSURL *)image color:(NSColor *)color repeat:(BOOL)repeat;
+{
+    NSString *colorName = [[self class] hexadecimalRepresentationOfColor:color];
+    if (!colorName) return NO;
+    
+    NSString *value = [NSString stringWithFormat:@"%@ url(%@)", colorName, [image absoluteString]];
+    if (!repeat)
+    {
+        value = [value stringByAppendingString:@" no-repeat"];
+    }
+    
+    [self writeProperty:@"background" value:value];
+    return YES;
+}
+
 - (BOOL)writeBackgroundWithGradient:(NSGradient *)gradient repeat:(BOOL)repeat;
 {
     NSColor *endColor;
