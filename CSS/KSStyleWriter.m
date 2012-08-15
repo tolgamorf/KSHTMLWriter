@@ -18,38 +18,29 @@
     [self writeString:@"; "];
 }
 
-- (BOOL)writeBackgroundWithImageURL:(NSURL *)image color:(NSColor *)color repeat:(BOOL)repeat;
+- (BOOL)writeBackgroundWithColor:(NSColor *)color
+                           image:(NSString *)image
+                          repeat:(BOOL)repeat
+                      attachment:(NSString *)attachment
+                        position:(NSString *)position;
 {
-    NSString *colorName = [[self class] hexadecimalRepresentationOfColor:color];
-    if (!colorName) return NO;
+    NSMutableArray *components = [[NSMutableArray alloc] init];
     
-    NSString *value = [NSString stringWithFormat:@"%@ url(%@)", colorName, [image absoluteString]];
-    if (!repeat)
+    if (color)
     {
-        value = [value stringByAppendingString:@" no-repeat"];
+        NSString *colorName = [[self class] hexadecimalRepresentationOfColor:color];
+        if (!colorName) return NO;
+        [components addObject:colorName];
     }
     
-    [self writeProperty:@"background" value:value];
-    return YES;
-}
-
-- (BOOL)writeBackgroundWithGradient:(NSGradient *)gradient repeat:(BOOL)repeat;
-{
-    NSColor *endColor;
-    [gradient getColor:&endColor location:NULL atIndex:([gradient numberOfColorStops] - 1)];
-    NSString *endColorName = [[self class] hexadecimalRepresentationOfColor:endColor];
-    if (!endColorName) return NO;
+    if (image) [components addObject:image];
+    if (!repeat) [components addObject:@"no-repeat"];
+    if (attachment) [components addObject:attachment];
+    if (position) [components addObject:position];
     
-    NSString *gradientDesc = [[self class] linearGradientWithGradient:gradient];
-    if (!gradientDesc) return NO;
+    [self writeProperty:@"background" value:[components componentsJoinedByString:@" "]];
+    [components release];
     
-    NSString *value = [NSString stringWithFormat:@"%@ %@", endColorName, gradientDesc];
-    if (!repeat)
-    {
-        value = [value stringByAppendingString:@" no-repeat"];
-    }
-    
-    [self writeProperty:@"background" value:value];
     return YES;
 }
 

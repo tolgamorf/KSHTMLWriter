@@ -16,8 +16,11 @@
 #pragma mark Colors & Gradients
 // These methods return nil or NO if a color cannot be expressed in RGB
 
-- (BOOL)writeBackgroundWithImageURL:(NSURL *)image color:(NSColor *)color repeat:(BOOL)repeat;
-- (BOOL)writeBackgroundWithGradient:(NSGradient *)gradient repeat:(BOOL)repeat;
+- (BOOL)writeBackgroundWithColor:(NSColor *)color
+                           image:(NSString *)image
+                          repeat:(BOOL)repeat
+                      attachment:(NSString *)attachment
+                        position:(NSString *)position;
 
 - (BOOL)writeProperty:(NSString *)property color:(NSColor *)color;
 + (NSString *)hexadecimalRepresentationOfColor:(NSColor *)color;
