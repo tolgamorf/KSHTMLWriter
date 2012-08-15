@@ -20,7 +20,7 @@
 
 - (BOOL)writeBackgroundWithColor:(NSColor *)color
                            image:(NSString *)image
-                          repeat:(BOOL)repeat
+                          repeat:(NSString *)repeat
                       attachment:(NSString *)attachment
                         position:(NSString *)position;
 {
@@ -34,7 +34,7 @@
     }
     
     if (image) [components addObject:image];
-    if (!repeat) [components addObject:@"no-repeat"];
+    if (repeat) [components addObject:repeat];
     if (attachment) [components addObject:attachment];
     if (position) [components addObject:position];
     
