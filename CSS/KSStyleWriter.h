@@ -19,7 +19,7 @@
 - (BOOL)writeBackgroundWithColor:(NSColor *)color
                            image:(NSString *)image
                           repeat:(BOOL)repeat
-                      attachment:(NSString *)attachment
+                      attachment:(NSString *)attachment // scroll | fixed | inherit
                         position:(NSString *)position;
 
 - (BOOL)writeProperty:(NSString *)property color:(NSColor *)color;
