@@ -8,6 +8,10 @@
 
 #import "KSForwardingWriter.h"
 
+
+@class KSBackgroundProperties;
+
+
 @interface KSStyleWriter : KSForwardingWriter
 
 - (void)writeProperty:(NSString *)property value:(NSString *)value;
@@ -15,6 +19,8 @@
 
 #pragma mark Colors & Gradients
 // These methods return nil or NO if a color cannot be expressed in RGB
+
+- (BOOL)writeBackground:(KSBackgroundProperties *)background;
 
 - (BOOL)writeBackgroundWithColor:(NSColor *)color
                            image:(NSString *)image

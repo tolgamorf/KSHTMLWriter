@@ -8,6 +8,9 @@
 
 #import "KSStyleWriter.h"
 
+#import "KSBackgroundProperties.h"
+
+
 @implementation KSStyleWriter
 
 - (void)writeProperty:(NSString *)property value:(NSString *)value;
@@ -16,6 +19,15 @@
     [self writeString:@": "];
     [self writeString:value];
     [self writeString:@"; "];
+}
+
+- (BOOL)writeBackground:(KSBackgroundProperties *)background;
+{
+    return [self writeBackgroundWithColor:[background color]
+                                    image:[background imageString]
+                                   repeat:[background repeat]
+                               attachment:[background attachment]
+                                 position:[background position]];
 }
 
 - (BOOL)writeBackgroundWithColor:(NSColor *)color
