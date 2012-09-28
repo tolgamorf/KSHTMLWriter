@@ -29,19 +29,7 @@
 
 - (void)writeProperty:(NSString *)property value:(NSString *)value;
 {
-    [self writeString:property];
-    [self writeString:@":"];
-    if (!self.compact) [self writeString:@" "];
-    [self writeString:value];
-    [self writeString:@";"];
-    if (self.newlines)
-    {
-        [self writeString:@"\n"];
-    }
-    else if (!self.compact)
-    {
-        [self writeString:@" "];
-    }
+    [self writeProperty:property value:value comment:nil];
 }
 
 // Version of writeProperty that allows a comment -- IGNORED if we aren't generating comments

@@ -19,6 +19,7 @@
 @property BOOL newlines;    // If true, follow each ; with a newline
 
 - (void)writeProperty:(NSString *)property value:(NSString *)value;
+- (void)writeProperty:(NSString *)property value:(NSString *)value comment:(NSString *)comment;
 
 
 #pragma mark Colors & Gradients
