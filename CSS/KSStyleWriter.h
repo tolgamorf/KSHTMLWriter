@@ -14,6 +14,10 @@
 
 @interface KSStyleWriter : KSForwardingWriter
 
+
+@property BOOL compact;     // No spaces after : or ;, no trailing ; if possible
+@property BOOL newlines;    // If true, follow each ; with a newline
+
 - (void)writeProperty:(NSString *)property value:(NSString *)value;
 
 
@@ -29,10 +33,9 @@
                         position:(NSString *)position;
 
 - (BOOL)writeProperty:(NSString *)property color:(NSColor *)color;
-+ (NSString *)hexadecimalRepresentationOfColor:(NSColor *)color;
++ (NSString *)CSSRepresentationOfColor:(NSColor *)color;
 
 - (BOOL)writeProperty:(NSString *)property gradient:(NSGradient *)gradient;
-+ (NSString *)linearGradientWithGradient:(NSGradient *)gradient;
 
 
 @end
