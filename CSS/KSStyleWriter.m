@@ -16,6 +16,11 @@
  
  We'll see. 
  
+ 
+ Possible improvement:  Automatically intercept calls for certain properties, and either
+ output the property, with different prefixes, multiple times (e.g. filters), or re-output
+ the property with a prefixed value, like gradients.
+ 
  */
 
 #import "KSStyleWriter.h"
