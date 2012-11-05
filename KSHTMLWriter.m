@@ -420,19 +420,25 @@ NSString *KSHTMLWriterDocTypeHTML_5 = @"html";
 
 - (BOOL)elementCanBeEmpty:(NSString *)tagName;
 {
-    if ([tagName isEqualToString:@"br"] ||
-        [tagName isEqualToString:@"img"] ||
-        [tagName isEqualToString:@"hr"] ||
-        [tagName isEqualToString:@"meta"] ||
-        [tagName isEqualToString:@"link"] ||
-        [tagName isEqualToString:@"input"] ||
-        [tagName isEqualToString:@"base"] ||
-        [tagName isEqualToString:@"basefont"] ||
-        [tagName isEqualToString:@"param"] ||
-        [tagName isEqualToString:@"area"] ||
-        [tagName isEqualToString:@"source"]) return YES;
+    static NSSet *emptyTags;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        
+        emptyTags = [[NSSet alloc] initWithObjects:
+                     @"br",
+                     @"img",
+                     @"hr",
+                     @"meta",
+                     @"link",
+                     @"input",
+                     @"base",
+                     @"basefont",
+                     @"param",
+                     @"area",
+                     @"source", nil];
+    });
     
-    return NO;
+    return [emptyTags containsObject:tagName];
 }
 
 + (BOOL)shouldPrettyPrintElementInline:(NSString *)elementName;
@@ -538,7 +544,9 @@ NSString *KSHTMLWriterDocTypeHTML_5 = @"html";
 
 - (void)startElement:(NSString *)elementName writeInline:(BOOL)writeInline; // for more control
 {
+#ifdef DEBUG
     NSAssert1([elementName isEqualToString:[elementName lowercaseString]], @"Attempt to start non-lowercase element: %@", elementName);
+#endif
     
     
     // Add in any pre-written classes
