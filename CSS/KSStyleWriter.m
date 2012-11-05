@@ -166,7 +166,6 @@
         
         // Can generate shorter string for simple colors
         // TODO: The old code returned standard names like "blue" when appropriate. Worth bothering with?
-        NSString *result;
         NSUInteger r16 = r/16;
         NSUInteger g16 = g/16;
         NSUInteger b16 = b/16;
