@@ -41,7 +41,4 @@
 
 - (BOOL)writeProperty:(NSString *)property gradient:(NSGradient *)gradient;
 
-+ (NSString *)stringWithDeclarationsBlock:(void (^)(KSStyleWriter *))declarations;
-
-
 @end

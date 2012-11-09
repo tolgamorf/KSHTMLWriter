@@ -33,10 +33,15 @@
 
 @interface KSStyleSheetWriter : KSForwardingWriter
 
+@property BOOL compact;     // No spaces after : or ;, no trailing ; if possible
+@property BOOL newlines;    // If true, follow each ; with a newline
+
 + (NSString *)stringWithDeclarationsBlock:(void(^)(KSStyleWriter *))declarations;
+- (void)writeSelector:(NSString *)selector declarations:(NSString *)declarations;
 
 // Vends out a temporary style writer to you for writing declarations. Do NOT attempt to use the style writer beyond the block
 - (void)writeSelector:(NSString *)selector declarationsBlock:(void (^)(KSStyleWriter *styleWriter))declarations;
+- (void)writeSelector:(NSString *)selector declarations:(NSString *)declarations;
 
 // Writes the string followed enough newlines to carry on writing
 - (void)writeCSSString:(NSString *)cssString;
@@ -48,6 +53,7 @@
 
 
 - (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarationsBlock:(void (^)(KSStyleSheetWriter *styleWriter))declarations;
-- (void) writeLineComment:(NSString *)comment;      // \n afterward if appropriate.
+- (void) writeCommentLine:(NSString *)comment;      // \n afterward if appropriate.
+- (void) writeLine:(NSString *)line;      // \n afterward if appropriate.
 
 @end

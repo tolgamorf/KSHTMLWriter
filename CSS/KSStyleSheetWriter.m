@@ -41,6 +41,14 @@
     return [NSString stringWithString:buffer];
 }
 
+- (void)writeSelector:(NSString *)selector declarations:(NSString *)declarations;
+{
+    [self writeString:selector];
+    [self writeString:@" { "];
+    [self writeString:declarations];
+    [self writeString:@"}\n"];
+}
+
 - (void)writeSelector:(NSString *)selector declarationsBlock:(void (^)(KSStyleWriter *))declarations;
 {
     [self writeString:selector];
@@ -75,18 +83,27 @@
     // Could be smarter and analyze declarations for newlines
 }
 
+- (void) writeLine:(NSString *)line;      // \n afterward if appropriate.
+{
+    [self writeString:line];
+    if (self.newlines)
+    {
+        [self writeString:@"\n"];
+    }
+}
+
 #pragma mark Comments
 
-- (void) writeLineComment:(NSString *)comment;      // \n afterward if appropriate.
+- (void) writeCommentLine:(NSString *)comment;      // \n afterward if appropriate.
 {
 #if CSS_COMMENTS
     
-    [self.writeString:@"/* "];
-    [self.writeString:comment];
-    [self.writeString:@" */"];
+    [self writeString:@"/* "];
+    [self writeString:comment];
+    [self writeString:@" */"];
     if (self.newlines)
     {
-        [self.writeString:@"\n"];
+        [self writeString:@"\n"];
     }
 #endif
 }
