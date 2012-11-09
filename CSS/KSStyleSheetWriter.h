@@ -33,6 +33,8 @@
 
 @interface KSStyleSheetWriter : KSForwardingWriter
 
++ (NSString *)stringWithDeclarationsBlock:(void(^)(KSStyleWriter *))declarations;
+
 // Vends out a temporary style writer to you for writing declarations. Do NOT attempt to use the style writer beyond the block
 - (void)writeSelector:(NSString *)selector declarationsBlock:(void (^)(KSStyleWriter *styleWriter))declarations;
 
@@ -41,5 +43,11 @@
 
 - (void)writeIDSelector:(NSString *)ID;
 - (void)writeDeclarationBlock:(NSString *)declarations;
+
+
+
+
+- (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarationsBlock:(void (^)(KSStyleSheetWriter *styleWriter))declarations;
+- (void) writeLineComment:(NSString *)comment;      // \n afterward if appropriate.
 
 @end

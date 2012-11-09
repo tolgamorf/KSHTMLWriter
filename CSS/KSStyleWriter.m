@@ -7,6 +7,10 @@
 //
 /*
  
+ 
+ For writing style declarations within a block.  To write out an entire declaration, use KSStyleSheetWriter.
+ 
+ 
  Dan's note: I'm not sure how much I want to put into this class.  Yes, convenience methods
  for emitting and formatting CSS.  Perhaps complex stuff like the gradient generation (which needs
  some complex formatting, plus output of special variants for decent browser compatibility).
@@ -30,14 +34,6 @@
 
 @implementation KSStyleWriter
 
-+ (NSString *)stringWithDeclarationsBlock:(void(^)(KSStyleWriter *))declarations;
-{
-    NSMutableString *buffer = [NSMutableString string];
-    KSStyleWriter *writer = [[[self alloc] initWithOutputWriter:buffer] autorelease];
-    declarations(writer);
-    [writer close];
-    return [NSString stringWithString:buffer];
-}
 
 #pragma mark General
 
@@ -82,43 +78,6 @@
     else if (!self.compact)
     {
         [self writeString:@" "];
-    }
-}
-
-#pragma mark Comments
-
-- (void) writeLineComment:(NSString *)comment;      // \n afterward if appropriate.
-{
-#if CSS_COMMENTS
-
-    [self.writeString:@"/* "];
-    [self.writeString:comment];
-    [self.writeString:@" */"];
-    if (self.newlines)
-    {
-        [self.writeString:@"\n"];
-    }
-#endif
-}
-
-#pragma mark Media Queries
-
-- (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarationsBlock:(void (^)(KSStyleWriter *styleWriter))declarations;
-{
-    // Collect the declarations before writing anything, in case it's empty.
-    
-    NSMutableString *buffer = [NSMutableString string];
-    KSStyleWriter *writer = [[[[self class] alloc] initWithOutputWriter:buffer] autorelease];
-    declarations(writer);
-    [writer close];
-    
-    if ([buffer length])
-    {
-        [self writeString:@"@media "];
-        [self writeString:predicate];
-        [self writeString:@" { "];
-        [self writeString:buffer];
-        [self writeString:@"}\n"];
     }
 }
 

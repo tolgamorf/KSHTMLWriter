@@ -22,7 +22,6 @@
 - (void)writeProperty:(NSString *)property floating:(float)floatValue units:(NSString *)units comment:(NSString *)comment;
 - (void)writeProperty:(NSString *)property value:(NSString *)value comment:(NSString *)comment;
 - (void)writeProperty:(NSString *)property asPercent:(float)floatValue comment:(NSString *)comment;
-- (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarationsBlock:(void (^)(KSStyleWriter *styleWriter))declarations;
 
 
 #pragma mark Colors & Gradients

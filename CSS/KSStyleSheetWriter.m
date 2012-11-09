@@ -32,6 +32,15 @@
 
 @implementation KSStyleSheetWriter
 
++ (NSString *)stringWithDeclarationsBlock:(void(^)(KSStyleWriter *))declarations;
+{
+    NSMutableString *buffer = [NSMutableString string];
+    KSStyleWriter *writer = [[[self alloc] initWithOutputWriter:buffer] autorelease];
+    declarations(writer);
+    [writer close];
+    return [NSString stringWithString:buffer];
+}
+
 - (void)writeSelector:(NSString *)selector declarationsBlock:(void (^)(KSStyleWriter *))declarations;
 {
     [self writeString:selector];
@@ -65,5 +74,52 @@
     
     // Could be smarter and analyze declarations for newlines
 }
+
+#pragma mark Comments
+
+- (void) writeLineComment:(NSString *)comment;      // \n afterward if appropriate.
+{
+#if CSS_COMMENTS
+    
+    [self.writeString:@"/* "];
+    [self.writeString:comment];
+    [self.writeString:@" */"];
+    if (self.newlines)
+    {
+        [self.writeString:@"\n"];
+    }
+#endif
+}
+
+#pragma mark Media Queries
+
+- (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarationsBlock:(void (^)(KSStyleSheetWriter *styleWriter))declarations;
+{
+    // Collect the declarations before writing anything, in case it's empty.
+    
+    NSMutableString *buffer = [NSMutableString string];
+    KSStyleSheetWriter *writer = [[[[self class] alloc] initWithOutputWriter:buffer] autorelease];
+    declarations(writer);
+    [writer close];
+        
+    if ([buffer length])
+    {
+        // Indent the declarations for going into the media query block
+        if ([buffer hasSuffix:@"\n"]) { [buffer deleteCharactersInRange:NSMakeRange(buffer.length-1, 1)]; }
+        // Indent with tabs
+        [buffer replaceOccurrencesOfString:@"\n"
+                                withString:@"\n\t"
+                                   options:NSLiteralSearch
+                                     range:NSMakeRange(0,[buffer length])];
+        [buffer insertString:@"\t" atIndex:0];
+
+        [self writeString:@"@media "];
+        [self writeString:predicate];
+        [self writeString:@" { "];
+        [self writeString:buffer];
+        [self writeString:@"}\n"];
+    }
+}
+
 
 @end
