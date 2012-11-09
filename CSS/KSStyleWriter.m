@@ -101,6 +101,28 @@
 #endif
 }
 
+#pragma mark Media Queries
+
+- (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarationsBlock:(void (^)(KSStyleWriter *styleWriter))declarations;
+{
+    // Collect the declarations before writing anything, in case it's empty.
+    
+    NSMutableString *buffer = [NSMutableString string];
+    KSStyleWriter *writer = [[[[self class] alloc] initWithOutputWriter:buffer] autorelease];
+    declarations(writer);
+    [writer close];
+    
+    if ([buffer length])
+    {
+        [self writeString:@"@media "];
+        [self writeString:predicate];
+        [self writeString:@" { "];
+        [self writeString:buffer];
+        [self writeString:@"}\n"];
+    }
+}
+
+
 #pragma mark Backgrounds
 
 // Not general enough for multiple backgrounds. 
