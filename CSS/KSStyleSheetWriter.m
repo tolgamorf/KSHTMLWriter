@@ -71,7 +71,6 @@
     KSStyleWriter *styleWriter = [[[KSStyleWriter alloc] initWithOutputWriter:buffer] autorelease];
     styleWriter.outputFormat = self.outputFormat;
     declarations(styleWriter);
-    [styleWriter release];
     if (self.outputFormat >= kStyleMultiLineCompact)
     {
         [buffer ks_indentLines];
