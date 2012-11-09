@@ -48,9 +48,15 @@
 }
 
 // Higher level convenience function; it builds up the correct string.
-- (void)writeProperty:(NSString *)property floating:(float)floatValue units:(NSString *)units comment:(NSString *)comment;
+- (void)writeProperty:(NSString *)property float:(float)floatValue units:(NSString *)units comment:(NSString *)comment;
 {
     NSString *value = (0.0 == floatValue) ? @"0" : [NSString stringWithFormat:@"%.8g%@", floatValue, units];
+    [self writeProperty:property value:value comment:comment];
+}
+
+- (void)writeProperty:(NSString *)property int:(int)intValue units:(NSString *)units comment:(NSString *)comment;
+{
+    NSString *value = (0 == intValue) ? @"0" : [NSString stringWithFormat:@"%d%@", (int)intValue, units];
     [self writeProperty:property value:value comment:comment];
 }
 
@@ -59,26 +65,20 @@
 {
     [self writeString:property];
     [self writeString:@":"];
-    if (!self.compact) [self writeString:@" "];
+    if (self.outputFormat > kStyleSuperCompact) [self writeString:@" "];
     [self writeString:value];
     [self writeString:@";"];
 #if CSS_COMMENTS
     if (comment && ![comment isEqualToString:@""])
     {
-        if (!self.compact) [self writeString:@" "];
+        if (self.outputFormat > kStyleSuperCompact) [self writeString:@" "];
         [self writeString:@"/* "];
         [self writeString:comment];
         [self writeString:@" */"];
     }
 #endif
-    if (self.newlines)
-    {
-        [self writeString:@"\n"];
-    }
-    else if (!self.compact)
-    {
-        [self writeString:@" "];
-    }
+    if (self.outputFormat == kStyleSingleLine) [self writeString:@" "];
+    if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
 }
 
 
@@ -247,17 +247,17 @@
         {
             // We can just do the color
             [buf appendString:[self.class CSSRepresentationOfColor:color]];
-            if (!self.compact) [buf appendString:@", "];
+            if (self.outputFormat > kStyleSuperCompact) [buf appendString:@" "];
         }
         else
         {
             [buf appendFormat:@"%@ %d%%,",
              [self.class CSSRepresentationOfColor:color],
              (int) roundf(location * 100.0)];
-            if (!self.compact) [buf appendString:@", "];
+            if (self.outputFormat > kStyleSuperCompact) [self writeString:@" "];
        }
     }
-    NSUInteger toDelete = self.compact ? 1 : 2;
+    NSUInteger toDelete = (self.outputFormat > kStyleSuperCompact) ? 2 : 1;
     [buf deleteCharactersInRange:NSMakeRange([buf length]-toDelete, toDelete)];    // space or comma-space
     [buf appendString:@")"];
     return buf;

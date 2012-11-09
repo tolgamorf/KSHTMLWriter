@@ -7,7 +7,7 @@
 //
 
 #import "KSForwardingWriter.h"
-
+#import "KSStyleSheetWriter.h"
 
 @class KSBackgroundProperties;
 
@@ -15,11 +15,11 @@
 @interface KSStyleWriter : KSForwardingWriter
 
 
-@property BOOL compact;     // No spaces after : or ;, no trailing ; if possible
-@property BOOL newlines;    // If true, follow each ; with a newline
+@property KSStyleSheetOutputFormat outputFormat;
 
 - (void)writeProperty:(NSString *)property value:(NSString *)value;
-- (void)writeProperty:(NSString *)property floating:(float)floatValue units:(NSString *)units comment:(NSString *)comment;
+- (void)writeProperty:(NSString *)property float:(float)floatValue units:(NSString *)units comment:(NSString *)comment;
+- (void)writeProperty:(NSString *)property int:(int)intValue units:(NSString *)units comment:(NSString *)comment;
 - (void)writeProperty:(NSString *)property value:(NSString *)value comment:(NSString *)comment;
 - (void)writeProperty:(NSString *)property asPercent:(float)floatValue comment:(NSString *)comment;
 

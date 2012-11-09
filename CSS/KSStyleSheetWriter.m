@@ -29,64 +29,74 @@
 
 #import "KSStyleWriter.h"
 
+@implementation NSMutableString (KSStyleSheetWriter)
+
+- (void) ks_indentLines;
+{
+    if ([self hasSuffix:@"\n"]) { [self deleteCharactersInRange:NSMakeRange(self.length-1, 1)]; }
+    // Indent with tabs
+    [self replaceOccurrencesOfString:@"\n"
+                            withString:@"\n\t"
+                               options:NSLiteralSearch
+                                 range:NSMakeRange(0,[self length])];
+    [self insertString:@"\t" atIndex:0];
+}
+@end
+
 
 @implementation KSStyleSheetWriter
 
-+ (NSString *)stringWithDeclarationsBlock:(void(^)(KSStyleWriter *))declarations;
++ (NSString *)stringWithOutputFormat:(KSStyleSheetOutputFormat)format declarationsBlock:(void(^)(KSStyleWriter *))declarations;
 {
     NSMutableString *buffer = [NSMutableString string];
-    KSStyleWriter *writer = [[[self alloc] initWithOutputWriter:buffer] autorelease];
+    KSStyleWriter *writer = [[[KSStyleWriter alloc] initWithOutputWriter:buffer] autorelease];
+    writer.outputFormat = format;
     declarations(writer);
     [writer close];
     return [NSString stringWithString:buffer];
 }
 
-- (void)writeSelector:(NSString *)selector declarations:(NSString *)declarations;
-{
-    [self writeString:selector];
-    [self writeString:@" { "];
-    [self writeString:declarations];
-    [self writeString:@"}\n"];
-}
+//         typedef enum { kStyleSuperCompact, kStyleSingleLine, kStyleMultiLineCompact, kStyleMultiLine } KSStyleSheetOutputFormat;
 
 - (void)writeSelector:(NSString *)selector declarationsBlock:(void (^)(KSStyleWriter *))declarations;
 {
     [self writeString:selector];
-    [self writeString:@" { "];
+    if (self.outputFormat == kStyleSingleLine || self.outputFormat == kStyleMultiLineCompact) [self writeString:@" "];      // #foo {
+    if (self.outputFormat == kStyleMultiLine) [self writeString:@"\n"];
+    [self writeString:@"{"];
+    if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
+    if (self.outputFormat == kStyleSingleLine) [self writeString:@" "];
     
-    KSStyleWriter *styleWriter = [[KSStyleWriter alloc] initWithOutputWriter:self];
+    NSMutableString *buffer = [NSMutableString string];
+    KSStyleWriter *styleWriter = [[[KSStyleWriter alloc] initWithOutputWriter:buffer] autorelease];
+    styleWriter.outputFormat = self.outputFormat;
     declarations(styleWriter);
     [styleWriter release];
-    
-    [self writeString:@"}\n"];
-}
-
-- (void)writeCSSString:(NSString *)cssString;
-{
-    [self writeString:cssString];
-    if (![cssString hasSuffix:@"\n"]) [self writeString:@"\n"];
-    [self writeString:@"\n"];
-}
-
-- (void)writeIDSelector:(NSString *)ID;
-{
-    [self writeString:@"#"];
-    [self writeString:ID];
-}
-
-- (void)writeDeclarationBlock:(NSString *)declarations;
-{
-    [self writeString:@" {"];
-    [self writeString:declarations];
+    if (self.outputFormat >= kStyleMultiLineCompact)
+    {
+        [buffer ks_indentLines];
+    }
+    if (self.outputFormat == kStyleSuperCompact && [buffer hasSuffix:@";"]) // remove trailing ; which isn't needed, in super-compact mode.
+    {
+        [buffer deleteCharactersInRange:NSMakeRange([buffer length]-1,1)];
+    }
+    [self writeString:buffer];
     [self writeString:@"}"];
-    
-    // Could be smarter and analyze declarations for newlines
+    if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
 }
 
-- (void) writeLine:(NSString *)line;      // \n afterward if appropriate.
+- (void)writeSelector:(NSString *)selector declarations:(NSString *)declarations;       // pre-built string; assume whitespace is as what we want here, but not indented
+{
+    [self writeSelector:selector declarationsBlock:^(KSStyleWriter *styleWriter){
+        [styleWriter writeString:declarations];
+    }];
+}
+
+
+- (void) writeLine:(NSString *)line;      // \n afterward if appropriate.  For @import directives and misc.
 {
     [self writeString:line];
-    if (self.newlines)
+    if (self.outputFormat >= kStyleMultiLineCompact)
     {
         [self writeString:@"\n"];
     }
@@ -94,14 +104,14 @@
 
 #pragma mark Comments
 
-- (void) writeCommentLine:(NSString *)comment;      // \n afterward if appropriate.
+- (void) writeCommentLine:(NSString *)comment;      // \n afterward if appropriate. Assumes it's starting on a line.
 {
 #if CSS_COMMENTS
     
     [self writeString:@"/* "];
     [self writeString:comment];
     [self writeString:@" */"];
-    if (self.newlines)
+    if (self.outputFormat >= kStyleMultiLineCompact)
     {
         [self writeString:@"\n"];
     }
@@ -116,25 +126,28 @@
     
     NSMutableString *buffer = [NSMutableString string];
     KSStyleSheetWriter *writer = [[[[self class] alloc] initWithOutputWriter:buffer] autorelease];
+    
+    // Explicitly make declarations nested inside be more compact.
+    if (kStyleMultiLineCompact == self.outputFormat) writer.outputFormat = kStyleSuperCompact;
+    if (kStyleMultiLine        == self.outputFormat) writer.outputFormat = kStyleSingleLine;
+
     declarations(writer);
     [writer close];
         
     if ([buffer length])
     {
-        // Indent the declarations for going into the media query block
-        if ([buffer hasSuffix:@"\n"]) { [buffer deleteCharactersInRange:NSMakeRange(buffer.length-1, 1)]; }
-        // Indent with tabs
-        [buffer replaceOccurrencesOfString:@"\n"
-                                withString:@"\n\t"
-                                   options:NSLiteralSearch
-                                     range:NSMakeRange(0,[buffer length])];
-        [buffer insertString:@"\t" atIndex:0];
 
         [self writeString:@"@media "];
         [self writeString:predicate];
-        [self writeString:@" { "];
+        if (self.outputFormat == kStyleSingleLine || self.outputFormat == kStyleMultiLineCompact) [self writeString:@" "];      // @media foo {
+        [self writeString:@"{"];
+        if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
+        if (self.outputFormat == kStyleSingleLine) [self writeString:@" "];
         [self writeString:buffer];
-        [self writeString:@"}\n"];
+        
+                // Um, newline after? Space?
+        [self writeString:@"}"];
+        if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
     }
 }
 
