@@ -30,11 +30,32 @@
 
 @implementation KSStyleWriter
 
++ (NSString *)stringWithDeclarationsBlock:(void(^)(KSStyleWriter *))declarations;
+{
+    NSMutableString *buffer = [NSMutableString string];
+    KSStyleWriter *writer = [[[self alloc] initWithOutputWriter:buffer] autorelease];
+    declarations(writer);
+    [writer close];
+    return [NSString stringWithString:buffer];
+}
+
 #pragma mark General
 
-- (void)writeProperty:(NSString *)property value:(NSString *)value;
+- (void)writeProperty:(NSString *)property value:(NSString *)value;     // Convenience, no comment
 {
     [self writeProperty:property value:value comment:nil];
+}
+
+- (void)writeProperty:(NSString *)property asPercent:(float)floatValue comment:(NSString *)comment;
+{
+    [self writeProperty:property value:[NSString stringWithFormat:@"%.8g%%", 100.0f * floatValue] comment:comment];
+}
+
+// Higher level convenience function; it builds up the correct string.
+- (void)writeProperty:(NSString *)property floating:(float)floatValue units:(NSString *)units comment:(NSString *)comment;
+{
+    NSString *value = (0.0 == floatValue) ? @"0" : [NSString stringWithFormat:@"%.8g%@", floatValue, units];
+    [self writeProperty:property value:value comment:comment];
 }
 
 // Version of writeProperty that allows a comment -- IGNORED if we aren't generating comments

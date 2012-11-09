@@ -19,7 +19,9 @@
 @property BOOL newlines;    // If true, follow each ; with a newline
 
 - (void)writeProperty:(NSString *)property value:(NSString *)value;
+- (void)writeProperty:(NSString *)property floating:(float)floatValue units:(NSString *)units comment:(NSString *)comment;
 - (void)writeProperty:(NSString *)property value:(NSString *)value comment:(NSString *)comment;
+- (void)writeProperty:(NSString *)property asPercent:(float)floatValue comment:(NSString *)comment;
 
 
 #pragma mark Colors & Gradients
@@ -37,6 +39,8 @@
 + (NSString *)CSSRepresentationOfColor:(NSColor *)color;
 
 - (BOOL)writeProperty:(NSString *)property gradient:(NSGradient *)gradient;
+
++ (NSString *)stringWithDeclarationsBlock:(void (^)(KSStyleWriter *))declarations;
 
 
 @end
