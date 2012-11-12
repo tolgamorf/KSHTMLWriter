@@ -80,8 +80,14 @@
         [buffer deleteCharactersInRange:NSMakeRange([buffer length]-1,1)];
     }
     [self writeString:buffer];
-    [self writeString:@"}"];
     if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
+    [self writeString:@"}"];
+    
+    // A declaration *block* generally has a newline after it, even in single line mode. Only way to avoid it is to be super-compact mode.
+    if (self.outputFormat >= kStyleSingleLine) [self writeString:@"\n"];
+
+    // An extra newline if we are in multi-line mode, to separate blocks visually.
+    if (self.outputFormat == kStyleMultiLine) [self writeString:@"\n"];
 }
 
 - (void)writeSelector:(NSString *)selector declarationString:(NSString *)declarations;       // pre-built string; assume whitespace is as what we want here, but not indented
@@ -95,10 +101,9 @@
 - (void) writeLine:(NSString *)line;      // \n afterward if appropriate.  For @import directives and misc.
 {
     [self writeString:line];
-    if (self.outputFormat >= kStyleMultiLineCompact)
-    {
-        [self writeString:@"\n"];
-    }
+    if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
+    // An extra newline if we are in multi-line mode, to separate blocks visually.
+    if (self.outputFormat == kStyleMultiLine) [self writeString:@"\n"];
 }
 
 #pragma mark Comments
@@ -110,10 +115,9 @@
     [self writeString:@"/* "];
     [self writeString:comment];
     [self writeString:@" */"];
-    if (self.outputFormat >= kStyleMultiLineCompact)
-    {
-        [self writeString:@"\n"];
-    }
+    if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
+    // An extra newline if we are in multi-line mode, to separate blocks visually.
+    if (self.outputFormat == kStyleMultiLine) [self writeString:@"\n"];
 #endif
 }
 
@@ -135,18 +139,24 @@
         
     if ([buffer length])
     {
+        if (self.outputFormat >= kStyleMultiLineCompact)
+        {
+            [buffer ks_indentLines];
+        }
 
         [self writeString:@"@media "];
         [self writeString:predicate];
         if (self.outputFormat == kStyleSingleLine || self.outputFormat == kStyleMultiLineCompact) [self writeString:@" "];      // @media foo {
+        if (self.outputFormat == kStyleMultiLine) [self writeString:@"\n"];
         [self writeString:@"{"];
         if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
         if (self.outputFormat == kStyleSingleLine) [self writeString:@" "];
         [self writeString:buffer];
-        
-                // Um, newline after? Space?
+        if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
         [self writeString:@"}"];
         if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
+        // An extra newline if we are in multi-line mode, to separate blocks visually.
+        if (self.outputFormat == kStyleMultiLine) [self writeString:@"\n"];
     }
 }
 
