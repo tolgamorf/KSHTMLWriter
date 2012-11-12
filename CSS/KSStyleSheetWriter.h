@@ -24,6 +24,7 @@
 //  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+#define CSS_COMMENTS 1
 
 #import "KSForwardingWriter.h"
 
@@ -44,6 +45,7 @@ typedef enum { kStyleSuperCompact, kStyleSingleLine, kStyleMultiLineCompact, kSt
 
 - (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarations:(void (^)(KSStyleSheetWriter *styleWriter))declarations;
 - (void)writeCommentLine:(NSString *)comment;      // \n afterward if appropriate.
+- (void)writeCommentSection:(NSString *)comment;      // \n afterward if appropriate.
 - (void)writeLine:(NSString *)line;      // \n afterward if appropriate.
 
 @end

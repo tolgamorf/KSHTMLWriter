@@ -118,6 +118,22 @@
 #endif
 }
 
+- (void) writeCommentSection:(NSString *)comment;      // \n afterward if appropriate. Assumes it's starting on a line.
+{
+#if CSS_COMMENTS
+    [self writeString:@"/* "];
+    if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"=========================================================================="];
+    [self writeString:@"\n   "];
+    [self writeString:comment];
+    [self writeString:@"\n   "];
+    if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"=========================================================================="];
+    [self writeString:@" */\n"];
+    if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
+    // An extra newline if we are in multi-line mode, to separate blocks visually.
+#endif
+}
+
+
 #pragma mark Media Queries
 
 - (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarations:(void (^)(KSStyleSheetWriter *styleWriter))declarations;
