@@ -44,13 +44,13 @@
 
 - (void)writeProperty:(NSString *)property asPercent:(float)floatValue comment:(NSString *)comment;
 {
-    [self writeProperty:property value:[NSString stringWithFormat:@"%.7g%%", 100.0f * floatValue] comment:comment];
+    [self writeProperty:property value:[NSString stringWithFormat:@"%.6g%%", 100.0f * floatValue] comment:comment];
 }
 
 // Higher level convenience function; it builds up the correct string.
 - (void)writeProperty:(NSString *)property float:(float)floatValue units:(NSString *)units comment:(NSString *)comment;
 {
-    NSString *value = (0.0 == floatValue) ? @"0" : [NSString stringWithFormat:@"%.7g%@", floatValue, units];
+    NSString *value = (0.0 == floatValue) ? @"0" : [NSString stringWithFormat:@"%.6g%@", floatValue, units];
     [self writeProperty:property value:value comment:comment];
 }
 
