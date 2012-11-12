@@ -56,8 +56,6 @@
     return [NSString stringWithString:buffer];
 }
 
-//         typedef enum { kStyleSuperCompact, kStyleSingleLine, kStyleMultiLineCompact, kStyleMultiLine } KSStyleSheetOutputFormat;
-
 - (void)writeSelector:(NSString *)selector declarations:(void (^)(KSStyleWriter *))declarations;
 {
     [self writeString:selector];
@@ -111,7 +109,6 @@
 - (void) writeCommentLine:(NSString *)comment;      // \n afterward if appropriate. Assumes it's starting on a line.
 {
 #if CSS_COMMENTS
-    
     [self writeString:@"/* "];
     [self writeString:comment];
     [self writeString:@" */"];
@@ -129,11 +126,7 @@
     
     NSMutableString *buffer = [NSMutableString string];
     KSStyleSheetWriter *writer = [[[[self class] alloc] initWithOutputWriter:buffer] autorelease];
-    
-    // Explicitly make declarations nested inside be more compact.
-    if (kStyleMultiLineCompact == self.outputFormat) writer.outputFormat = kStyleSuperCompact;
-    if (kStyleMultiLine        == self.outputFormat) writer.outputFormat = kStyleSingleLine;
-
+    writer.outputFormat = self.outputFormat;        // use same format as parent, though declarations block can certainly adjust to be more compact.
     declarations(writer);
     [writer close];
         
