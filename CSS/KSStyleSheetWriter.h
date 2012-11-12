@@ -36,14 +36,13 @@ typedef enum { kStyleSuperCompact, kStyleSingleLine, kStyleMultiLineCompact, kSt
 
 @property KSStyleSheetOutputFormat outputFormat;
 
-+ (NSString *)stringWithOutputFormat:(KSStyleSheetOutputFormat)format declarationsBlock:(void(^)(KSStyleWriter *))declarations; // no difference between last 2 since that involves { } wrapping
-- (void)writeSelector:(NSString *)selector declarations:(NSString *)declarations;
++ (NSString *)stringWithOutputFormat:(KSStyleSheetOutputFormat)format declarations:(void(^)(KSStyleWriter *))declarations; // no difference between last 2 since that involves { } wrapping
 
 // Vends out a temporary style writer to you for writing declarations. Do NOT attempt to use the style writer beyond the block
-- (void)writeSelector:(NSString *)selector declarationsBlock:(void (^)(KSStyleWriter *styleWriter))declarations;
-- (void)writeSelector:(NSString *)selector declarations:(NSString *)declarations;
+- (void)writeSelector:(NSString *)selector declarations:(void (^)(KSStyleWriter *styleWriter))declarations;
+- (void)writeSelector:(NSString *)selector declarationString:(NSString *)declarations;
 
-- (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarationsBlock:(void (^)(KSStyleSheetWriter *styleWriter))declarations;
+- (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarations:(void (^)(KSStyleSheetWriter *styleWriter))declarations;
 - (void)writeCommentLine:(NSString *)comment;      // \n afterward if appropriate.
 - (void)writeLine:(NSString *)line;      // \n afterward if appropriate.
 

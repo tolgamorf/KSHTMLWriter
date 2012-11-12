@@ -46,7 +46,7 @@
 
 @implementation KSStyleSheetWriter
 
-+ (NSString *)stringWithOutputFormat:(KSStyleSheetOutputFormat)format declarationsBlock:(void(^)(KSStyleWriter *))declarations;
++ (NSString *)stringWithOutputFormat:(KSStyleSheetOutputFormat)format declarations:(void(^)(KSStyleWriter *))declarations;
 {
     NSMutableString *buffer = [NSMutableString string];
     KSStyleWriter *writer = [[[KSStyleWriter alloc] initWithOutputWriter:buffer] autorelease];
@@ -58,7 +58,7 @@
 
 //         typedef enum { kStyleSuperCompact, kStyleSingleLine, kStyleMultiLineCompact, kStyleMultiLine } KSStyleSheetOutputFormat;
 
-- (void)writeSelector:(NSString *)selector declarationsBlock:(void (^)(KSStyleWriter *))declarations;
+- (void)writeSelector:(NSString *)selector declarations:(void (^)(KSStyleWriter *))declarations;
 {
     [self writeString:selector];
     if (self.outputFormat == kStyleSingleLine || self.outputFormat == kStyleMultiLineCompact) [self writeString:@" "];      // #foo {
@@ -84,9 +84,9 @@
     if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
 }
 
-- (void)writeSelector:(NSString *)selector declarations:(NSString *)declarations;       // pre-built string; assume whitespace is as what we want here, but not indented
+- (void)writeSelector:(NSString *)selector declarationString:(NSString *)declarations;       // pre-built string; assume whitespace is as what we want here, but not indented
 {
-    [self writeSelector:selector declarationsBlock:^(KSStyleWriter *styleWriter){
+    [self writeSelector:selector declarations:^(KSStyleWriter *styleWriter){
         [styleWriter writeString:declarations];
     }];
 }
@@ -119,7 +119,7 @@
 
 #pragma mark Media Queries
 
-- (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarationsBlock:(void (^)(KSStyleSheetWriter *styleWriter))declarations;
+- (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarations:(void (^)(KSStyleSheetWriter *styleWriter))declarations;
 {
     // Collect the declarations before writing anything, in case it's empty.
     
