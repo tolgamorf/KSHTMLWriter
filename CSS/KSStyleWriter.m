@@ -73,7 +73,7 @@
 #if CSS_COMMENTS
     if (comment && ![comment isEqualToString:@""])
     {
-        if (self.outputFormat & kStyleSpacesBetween) [self writeString:@" "];
+        if (self.outputFormat & kStyleSpacesBetween || self.outputFormat & kStyleLinesBetween) [self writeString:@" "];
         [self writeString:@"/* "];
         [self writeString:comment];
         [self writeString:@" */"];
