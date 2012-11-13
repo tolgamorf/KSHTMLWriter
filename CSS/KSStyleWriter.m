@@ -60,25 +60,27 @@
     [self writeProperty:property value:value comment:comment];
 }
 
+
+
 // Version of writeProperty that allows a comment -- IGNORED if we aren't generating comments
 - (void)writeProperty:(NSString *)property value:(NSString *)value comment:(NSString *)comment;
 {
     [self writeString:property];
     [self writeString:@":"];
-    if (self.outputFormat > kStyleSuperCompact) [self writeString:@" "];
+    if (self.outputFormat & kStyleSpaceAfterColon) [self writeString:@" "];
     [self writeString:value];
     [self writeString:@";"];
 #if CSS_COMMENTS
     if (comment && ![comment isEqualToString:@""])
     {
-        if (self.outputFormat > kStyleSuperCompact) [self writeString:@" "];
+        if (self.outputFormat & kStyleSpacesBetween) [self writeString:@" "];
         [self writeString:@"/* "];
         [self writeString:comment];
         [self writeString:@" */"];
     }
 #endif
-    if (self.outputFormat == kStyleSingleLine) [self writeString:@" "];
-    if (self.outputFormat >= kStyleMultiLineCompact) [self writeString:@"\n"];
+    if (self.outputFormat & kStyleSpacesBetween) [self writeString:@" "];
+    if (self.outputFormat & kStyleLinesBetween) [self writeString:@"\n"];
 }
 
 
@@ -247,17 +249,17 @@
         {
             // We can just do the color
             [buf appendString:[self.class CSSRepresentationOfColor:color]];
-            if (self.outputFormat > kStyleSuperCompact) [buf appendString:@" "];
+            if (self.outputFormat & kStyleSpacesBetween) [buf appendString:@" "];
         }
         else
         {
             [buf appendFormat:@"%@ %d%%,",
              [self.class CSSRepresentationOfColor:color],
              (int) roundf(location * 100.0)];
-            if (self.outputFormat > kStyleSuperCompact) [self writeString:@" "];
+            if (self.outputFormat & kStyleSpacesBetween) [self writeString:@" "];
        }
     }
-    NSUInteger toDelete = (self.outputFormat > kStyleSuperCompact) ? 2 : 1;
+    NSUInteger toDelete = (self.outputFormat & kStyleSpacesBetween) ? 2 : 1;
     [buf deleteCharactersInRange:NSMakeRange([buf length]-toDelete, toDelete)];    // space or comma-space
     [buf appendString:@")"];
     return buf;

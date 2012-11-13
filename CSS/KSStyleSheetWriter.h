@@ -28,7 +28,15 @@
 
 #import "KSForwardingWriter.h"
 
-typedef enum { kStyleSuperCompact, kStyleSingleLine, kStyleMultiLineCompact, kStyleMultiLine } KSStyleSheetOutputFormat;
+typedef enum {
+	kStyleSpaceAfterColon		= 0,			// foo: bar rather than foo:bar
+	kStyleSpacesBetween			= (1 <<  0),	// spaces between declarations.
+	kStyleLinesBetween			= (1 <<  1),	// newlines between declarations. Don't use both this and spacesBetween.
+	kStyleEndingSemicolon		= (1 <<  2),	// if set, last declaration in block ends in unnecessary semicolon
+	kStyleNewlineBeforeBrace	= (1 <<	 3),	// in declaration blocks, start { on new line. If not set, it's k&r style :-)
+	kStyleIndent				= (1 <<  4),	// in declaration blocks, should lines be indented
+	kStyleHighlightSections		= (1 <<  5),	// Chunks of ======== to highlight big sections
+} KSStyleSheetOutputFormat;
 
 @class KSStyleWriter;
 
