@@ -58,7 +58,8 @@
 - (void)writeSelector:(NSString *)selector declarations:(void (^)(KSStyleWriter *))declarations;
 {
     [self writeString:selector];
-    if (self.outputFormat & kStyleSpacesBetween) [self writeString:@" "];      // #foo {
+    if (self.outputFormat & kStyleSpacesBetween
+        || (self.outputFormat & kStyleLinesBetween && 0 == (self.outputFormat & kStyleNewlineBeforeBrace)) ) [self writeString:@" "];      // #foo {
     if (self.outputFormat & kStyleNewlineBeforeBrace) [self writeString:@"\n"];
     [self writeString:@"{"];
     if (self.outputFormat & kStyleSpacesBetween) [self writeString:@" "];
@@ -148,7 +149,8 @@
 
         [self writeString:@"@media "];
         [self writeString:predicate];
-        if (self.outputFormat & kStyleSpacesBetween) [self writeString:@" "];      // @media foo {
+        if (self.outputFormat & kStyleSpacesBetween
+            || (self.outputFormat & kStyleLinesBetween && 0 == (self.outputFormat & kStyleNewlineBeforeBrace)) ) [self writeString:@" "];      // @media foo {
         if (self.outputFormat & kStyleNewlineBeforeBrace) [self writeString:@"\n"];
         [self writeString:@"{"];
         if (self.outputFormat & kStyleLinesBetween) [self writeString:@"\n"];
