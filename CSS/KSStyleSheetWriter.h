@@ -36,6 +36,7 @@ typedef enum {
 	kStyleNewlineBeforeBrace	= (1 <<	 3),	// in declaration blocks, start { on new line. If not set, it's k&r style :-)
 	kStyleIndent				= (1 <<  4),	// in declaration blocks, should lines be indented
 	kStyleHighlightSections		= (1 <<  5),	// Chunks of ======== to highlight big sections
+	kStyleLongSelectorForceBreak= (1 <<  6),	// #superLongSelector\n{ ... } even if not kStyleNewlineBeforeBrace
 } KSStyleSheetOutputFormat;
 
 @class KSStyleWriter;
