@@ -60,10 +60,8 @@
     [self writeProperty:property value:value comment:comment];
 }
 
-
-
-// Version of writeProperty that allows a comment -- IGNORED if we aren't generating comments
-- (void)writeProperty:(NSString *)property value:(NSString *)value comment:(NSString *)comment;
+// Primitive method to write out property without checking for special prefixes to also write.
+- (void)_writeProperty:(NSString *)property value:(NSString *)value comment:(NSString *)comment;
 {
     [self writeString:property];
     [self writeString:@":"];
@@ -82,6 +80,101 @@
     if (self.outputFormat & kStyleSpacesBetween) [self writeString:@" "];
     if (self.outputFormat & kStyleLinesBetween) [self writeString:@"\n"];
 }
+
+
+// Main version of writeProperty that allows a comment -- IGNORED if we aren't generating comments
+// This is the "bottleneck" method that all convenience methods call.
+// It knows which properties need to have browser prefix versions written as well.
+//
+//  (Should it force them to be single-line?)
+//
+
+
+/*
+ 
+https://developer.mozilla.org/en-US/docs/CSS/CSS_Reference/Mozilla_Extensions?redirectlocale=en-US&redirectslug=CSS_Reference%2FMozilla_Extensions
+ 
+ 
+ 
+ */
+
+- (void)writeProperty:(NSString *)property value:(NSString *)value comment:(NSString *)comment;
+{
+    static NSMutableDictionary *sSpecialProperties = nil;
+    static NSDictionary *sSpecialPropertyPrefixes = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        
+        NSSet *sO = [NSSet setWithArray:@[@"o"]];
+        NSSet *sWebkit = [NSSet setWithArray:@[@"webkit"]];
+        NSSet *sMozWebkit = [NSSet setWithArray:@[@"moz", @"webkit"]];
+        NSSet *sMozWebkitO = [NSSet setWithArray:@[@"moz", @"webkit", @"o"]];
+        NSSet *sMozWebkitOMs = [NSSet setWithArray:@[@"moz", @"webkit", @"o", @"ms"]];
+        NSSet *sMozWebkitMs = [NSSet setWithArray:@[@"moz", @"webkit", @"ms"]];
+        
+                                    
+        
+        sSpecialProperties = [[NSMutableDictionary alloc] initWithDictionary:@{     // Mutable so it can be added for caching
+                              @"transform" : sMozWebkitOMs,
+                              @"gradient" : sMozWebkitO,
+                              @"hyphens" : sMozWebkitMs,
+                              @"transform-style" : sMozWebkit,   // ??? o, ??? ms
+                              @"border-image" : sMozWebkitO,
+                              @"box-shadow" : sWebkit,
+                              @"box-sizing" : sMozWebkit,
+                              @"text-overflow" : sO,
+                              
+                              @"transition" : sMozWebkitO,
+                              @"filter" : sWebkit,
+                              @"box-reflect" : sWebkit,
+                              @"text-fill-color" : sWebkit }];
+        
+        // Slower check by prefix.  If a match is found, it's added to sSpecialProperties, at runtime, for faster matching next time.
+        sSpecialPropertyPrefixes = [[NSDictionary alloc] initWithDictionary:@{
+                                    @"animation-" : sMozWebkitO,      // Really would like an NSSet prefix here!
+                                    @"border-" : sWebkit,       // For border-*-radius. Moz: ff 3.6 and back so not worth it
+                                    @"column-" : sMozWebkit,
+                                    @"mask-" : sWebkit,
+                                    @"text-stroke" : sWebkit }];
+    });
+    
+    __block NSSet *prefixesToUse = [sSpecialProperties valueForKey:property];     // Special property in our quick lookup?
+    if (!prefixesToUse)
+    {
+        [sSpecialPropertyPrefixes enumerateKeysAndObjectsWithOptions:NSEnumerationConcurrent
+                                                 usingBlock:^(id propertyPrefixKey, id browserPrefixSet, BOOL *stop) {
+                                                     if ([property hasPrefix:propertyPrefixKey])
+                                                     {
+                                                         prefixesToUse = browserPrefixSet;
+                                                         *stop = YES;
+                                                     }
+                                                 }];
+        if (prefixesToUse)
+        {
+            // If it found a match, cache this result in sSpecialProperties so that next time, in this run, the property will be found quickly.
+            sSpecialProperties[property] = prefixesToUse;
+        }
+    }
+    if (prefixesToUse)      // So, did we find any prefixes? If so, write them out (along with the regular one)
+    {
+        KSStyleSheetOutputFormat savedFormat = self.outputFormat;
+        self.outputFormat = (savedFormat | kStyleSpacesBetween) & (~kStyleLinesBetween);
+        
+        for (NSString *prefix in [[prefixesToUse allObjects] sortedArrayUsingSelector:@selector(compare:)])
+        {
+            [self _writeProperty:[NSString stringWithFormat:@"-%@-%@", prefix, property] value:value comment:nil];
+        }
+        self.outputFormat = savedFormat;
+        [self _writeProperty:property value:value comment:comment]; // Only do comment last.
+    
+    }
+    else        // No prefixes, just write the usual property.
+    {
+        [self _writeProperty:property value:value comment:comment];
+    }
+    
+}
+
 
 
 #pragma mark Backgrounds
@@ -202,7 +295,8 @@
     static NSArray *sPrefixes = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sPrefixes = [[NSArray alloc] initWithObjects:@"-moz-", @"-webkit-", @"-o-", @"", nil];
+        sPrefixes = @[@"-moz-", @"-webkit-", @"-o-", @""];
+        [sPrefixes retain];
     });
     for (NSString *prefix in sPrefixes)
     {
@@ -223,9 +317,10 @@
         static NSArray *sDirectionKeywords = nil;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            sDirectionKeywords = [[NSArray alloc] initWithObjects:@"top", @"left top", @"right", @"right top", @"left", @"bottom", @"left bottom", @"right bottom", @"right",nil];
+            sDirectionKeywords = @[@"top", @"left top", @"right", @"right top", @"left", @"bottom", @"left bottom", @"right bottom", @"right"];
+            [sDirectionKeywords retain];
         });
-        toString = [NSString stringWithFormat:@"to %@", [sDirectionKeywords objectAtIndex:toEdge]];
+        toString = [NSString stringWithFormat:@"to %@", sDirectionKeywords[toEdge]];
     }
     else
     {
