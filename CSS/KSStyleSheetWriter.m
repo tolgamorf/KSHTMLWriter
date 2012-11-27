@@ -137,7 +137,7 @@
 
 #pragma mark Media Queries
 
-- (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarations:(void (^)(KSStyleSheetWriter *styleWriter))declarations;
+- (void)writeMediaQuery:(NSString *)predicate declarations:(void (^)(KSStyleSheetWriter *styleWriter))declarations;
 {
     // Collect the declarations before writing anything, in case it's empty.
     

@@ -52,7 +52,7 @@ typedef enum {
 - (void)writeSelector:(NSString *)selector declarations:(void (^)(KSStyleWriter *styleWriter))declarations;
 - (void)writeSelector:(NSString *)selector declarationString:(NSString *)declarations;
 
-- (void)writeMediaQuery:(NSString *)predicate comment:(NSString *)comment declarations:(void (^)(KSStyleSheetWriter *styleWriter))declarations;
+- (void)writeMediaQuery:(NSString *)predicate declarations:(void (^)(KSStyleSheetWriter *styleWriter))declarations;
 - (void)writeCommentLine:(NSString *)comment;      // \n afterward if appropriate.
 - (void)writeCommentSection:(NSString *)comment;      // \n afterward if appropriate.
 - (void)writeLine:(NSString *)line;      // \n afterward if appropriate.
