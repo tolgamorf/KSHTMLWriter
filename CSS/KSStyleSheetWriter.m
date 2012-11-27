@@ -85,6 +85,7 @@
         [buffer deleteCharactersInRange:NSMakeRange([buffer length]-1,1)];
     }
     [self writeString:buffer];
+    if (self.outputFormat & kStyleSpacesBetween) [self writeString:@" "];
     if (self.outputFormat & kStyleLinesBetween) [self writeString:@"\n"];
     [self writeString:@"}"];
     
