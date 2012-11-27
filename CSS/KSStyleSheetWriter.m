@@ -147,9 +147,10 @@
     writer.outputFormat = self.outputFormat;        // use same format as parent, though declarations block can certainly adjust to be more compact.
     declarations(writer);
     [writer close];
-        
+    
     if ([buffer length])
     {
+		if ([buffer hasSuffix:@"\n"]) { [buffer deleteCharactersInRange:NSMakeRange(buffer.length-1, 1)]; }
         if (self.outputFormat & kStyleIndent)
         {
             [buffer ks_indentLines];
