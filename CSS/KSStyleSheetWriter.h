@@ -28,7 +28,7 @@
 
 #import "KSForwardingWriter.h"
 
-typedef enum {
+typedef NS_OPTIONS(NSUInteger, KSStyleSheetOutputFormat) {
 	kStyleSpaceAfterColon		= 0,			// foo: bar rather than foo:bar
 	kStyleSpacesBetween			= (1 <<  0),	// spaces between declarations.
 	kStyleLinesBetween			= (1 <<  1),	// newlines between declarations. Don't use both this and spacesBetween.
@@ -37,7 +37,7 @@ typedef enum {
 	kStyleIndent				= (1 <<  4),	// in declaration blocks, should lines be indented
 	kStyleHighlightSections		= (1 <<  5),	// Chunks of ======== to highlight big sections
 	kStyleLongSelectorForceBreak= (1 <<  6),	// #superLongSelector\n{ ... } even if not kStyleNewlineBeforeBrace
-} KSStyleSheetOutputFormat;
+};
 
 @class KSStyleWriter;
 
