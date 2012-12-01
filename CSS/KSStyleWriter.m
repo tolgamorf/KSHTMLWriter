@@ -123,6 +123,7 @@ https://developer.mozilla.org/en-US/docs/CSS/CSS_Reference/Mozilla_Extensions?re
                               @"box-shadow" : sWebkit,
                               @"box-sizing" : sMozWebkit,
                               @"text-overflow" : sO,
+							  @"border-width": [NSSet set],		// prevent border-width from matching wildcard below
                               
                               @"transition" : sMozWebkitO,
                               @"filter" : sWebkit,
@@ -132,7 +133,7 @@ https://developer.mozilla.org/en-US/docs/CSS/CSS_Reference/Mozilla_Extensions?re
         // Slower check by prefix.  If a match is found, it's added to sSpecialProperties, at runtime, for faster matching next time.
         sSpecialPropertyPrefixes = [[NSDictionary alloc] initWithDictionary:@{
                                     @"animation-" : sMozWebkitO,      // Really would like an NSSet prefix here!
-                                    @"border-" : sWebkit,       // For border-*-radius. Moz: ff 3.6 and back so not worth it
+                                    @"border-" : sMozWebkit,       // For border-*-radius. Moz: ff 3.6 and back, so maybe we could exclude, though csslint wants it.
                                     @"column-" : sMozWebkit,
                                     @"mask-" : sWebkit,
                                     @"text-stroke" : sWebkit }];
