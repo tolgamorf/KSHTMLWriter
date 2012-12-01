@@ -111,6 +111,7 @@ https://developer.mozilla.org/en-US/docs/CSS/CSS_Reference/Mozilla_Extensions?re
         NSSet *sMozWebkitO = [NSSet setWithArray:@[@"moz", @"webkit", @"o"]];
         NSSet *sMozWebkitOMs = [NSSet setWithArray:@[@"moz", @"webkit", @"o", @"ms"]];
         NSSet *sMozWebkitMs = [NSSet setWithArray:@[@"moz", @"webkit", @"ms"]];
+		NSSet *sNone = [NSSet set];
         
                                     
         
@@ -123,7 +124,9 @@ https://developer.mozilla.org/en-US/docs/CSS/CSS_Reference/Mozilla_Extensions?re
                               @"box-shadow" : sWebkit,
                               @"box-sizing" : sMozWebkit,
                               @"text-overflow" : sO,
-							  @"border-width": [NSSet set],		// prevent border-width from matching wildcard below
+							  @"border-width": sNone,		// prevent from matching wildcard below
+							  @"border-color": sNone,		// prevent from matching wildcard below
+							  @"border-style": sNone,		// prevent from matching wildcard below
                               
                               @"transition" : sMozWebkitO,
                               @"filter" : sWebkit,
