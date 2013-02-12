@@ -224,6 +224,18 @@ NSString *KSHTMLWriterDocTypeHTML_5 = @"html";
     return result;
 }
 
+#pragma mark Document
+
+- (void)writeDocumentOfType:(NSString *)docType encoding:(NSStringEncoding)encoding head:(void (^)(void))headBlock body:(void (^)(void))bodyBlock;
+{
+    [self startDocumentWithDocType:docType encoding:encoding];
+    
+    [self writeElement:@"html" content:^{
+        if (headBlock) [self writeElement:@"head" content:headBlock];
+        [self writeElement:@"body" content:bodyBlock];
+    }];
+}
+
 #pragma mark Line Break
 
 - (void)writeLineBreak;
@@ -318,14 +330,19 @@ NSString *KSHTMLWriterDocTypeHTML_5 = @"html";
 
 - (void)writeJavascript:(NSString *)script useCDATA:(BOOL)useCDATA;
 {
-    [self startJavascriptElementWithSrc:nil];
-    {{
+    [self writeJavascriptWithContent:^{
+        
         if (useCDATA) [self startJavascriptCDATA];
         [self writeHTMLString:script];
         if (useCDATA) [self endJavascriptCDATA];
-        
-        [self increaseIndentationLevel];    // compensate for -decreaseIndentationLevel
-    }}
+    }];
+}
+
+- (void)writeJavascriptWithContent:(void (^)(void))content;
+{
+    [self startJavascriptElementWithSrc:nil];
+    content();
+    [self increaseIndentationLevel];    // compensate for -decreaseIndentationLevel
     [self endElement];
 }
 
@@ -346,7 +363,7 @@ NSString *KSHTMLWriterDocTypeHTML_5 = @"html";
     else
     {
         // Embedded scripts should start on their own line for clarity
-        // Outdent the script comapred to wha'ts normal
+        // Outdent the script comapred to what's normal
         [self startElement:@"script" writeInline:NO];
         
         if (!src)

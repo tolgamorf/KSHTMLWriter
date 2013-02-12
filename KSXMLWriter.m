@@ -116,12 +116,12 @@
 
 - (void)startDocumentWithDocType:(NSString *)docType encoding:(NSStringEncoding)encoding;
 {
+    [self setEncoding:encoding];    // do first so -writeString: knows what's going on
+    
     [self writeString:@"<!DOCTYPE "];
     [self writeString:docType];
     [self writeString:@">"];
     [self startNewline];
-    
-    [self setEncoding:encoding];
 }
 
 #pragma mark Characters
@@ -495,6 +495,7 @@ static NSCharacterSet *sCharactersToEntityEscapeWithoutQuot;
     return (encoding == NSASCIIStringEncoding ||
             encoding == NSUTF8StringEncoding ||
 			encoding == NSISOLatin1StringEncoding ||
+			encoding == NSWindowsCP1251StringEncoding ||
 			encoding == NSUnicodeStringEncoding);
 }
 
@@ -517,7 +518,7 @@ static NSCharacterSet *sCharactersToEntityEscapeWithoutQuot;
                                            range,
                                            CFStringConvertNSStringEncodingToEncoding([self encoding]),
                                            0,                   // don't convert invalid characters
-                                           NO,
+                                           false,
                                            NULL,                // not interested in actually getting the bytes
                                            0,
                                            NULL);
